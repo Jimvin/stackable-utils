@@ -10,7 +10,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           adminPort: 12000

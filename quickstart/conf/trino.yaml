@@ -39,12 +39,18 @@ spec:
     secretKey: changeme
     sslEnabled: false
     pathStyleAccess: true
+  hiveAuthorisation:
+    allow-drop-table: true
+    allow-rename-table: true
+    allow-add-column: true
+    allow-drop-column: true
+    allow-rename-column: true
   coordinators:
     roleGroups:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         config:
           coordinator: true
           nodeDataDir: /data/trino/coordinator
@@ -111,7 +117,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           nodeDataDir: /data/trino/worker

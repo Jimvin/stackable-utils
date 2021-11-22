@@ -10,7 +10,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           javaHome: /usr/lib/jvm/java-11-openjdk-amd64/

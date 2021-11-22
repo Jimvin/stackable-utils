@@ -10,7 +10,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         config:
           port: 8181
           repoRuleReference: "http://localhost:3030/opa/v1"

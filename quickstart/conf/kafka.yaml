@@ -14,7 +14,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           logDirs: "/data/kafka/kafka-logs"

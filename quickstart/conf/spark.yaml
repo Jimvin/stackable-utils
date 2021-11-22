@@ -13,7 +13,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           masterPort: 7078
@@ -23,7 +23,7 @@ spec:
       2core2g:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           cores: 2
@@ -35,7 +35,7 @@ spec:
       default:
         selector:
           matchLabels:
-            kubernetes.io/os: stackable-linux
+            kubernetes.io/os: linux
         replicas: 1
         config:
           historyWebUiPort: 18081
