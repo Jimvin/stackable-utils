@@ -10,10 +10,10 @@ ALLOWED_OPERATORS=(zookeeper kafka nifi spark hive trino opa regorule)
 # Do you want to use the dev or release repository?
 REPO_TYPE=dev
 HELM_REPO_URL="https://repo.stackable.tech/repository/helm-${REPO_TYPE}/"
-HELM_REPO_NAME="stackable-operators"
+HELM_REPO_NAME="stackable"
 
 # List of operators to install
-OPERATORS=(zookeeper)
+OPERATORS=(zookeeper kafka nifi)
 
 if [ $UID != 0 ]
 then
@@ -78,12 +78,12 @@ function install_prereqs_redhat {
 
 function install_prereqs_debian {
   print_g "Installing prerequisite OS packages"
-  apt-get -y install gnupg openjdk-11-jdk curl python
+  apt-get -q -y install gnupg openjdk-11-jdk curl python
 }
 
 function install_prereqs_ubuntu {
   print_g "Installing prerequisite OS packages"
-  apt-get -y install gnupg openjdk-11-jdk curl python
+  apt-get -q -y install gnupg openjdk-11-jdk curl python
 }
 
 function install_k8s {
@@ -108,6 +108,7 @@ function install_k9s {
 function install_helm {
   print_g "Installing Helm"
   /usr/bin/curl -sfL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | /bin/bash -
+  print_y "/usr/local/bin/helm repo add ${HELM_REPO_NAME} ${HELM_REPO_URL}"
   /usr/local/bin/helm repo add ${HELM_REPO_NAME} ${HELM_REPO_URL}
 }
 
@@ -131,7 +132,8 @@ function install_operator {
   OPERATOR=$1
   PKG_NAME=${OPERATOR}-operator
   print_g "Installing Stackable operator for ${OPERATOR}"
-  /usr/local/bin/helm install "${PKG_NAME}" "${HELM_REPO_NAME}/$PKG_NAME"
+  print_y "/usr/local/bin/helm install \"${PKG_NAME}\" \"${HELM_REPO_NAME}/$PKG_NAME\" --devel"
+  /usr/local/bin/helm install "${PKG_NAME}" "${HELM_REPO_NAME}/$PKG_NAME" --devel
 }
 
 function install_stackable_operators {

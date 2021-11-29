@@ -5,7 +5,7 @@ metadata:
   name: simple
 spec:
   version:
-    kafka_version: 2.8.0
+    kafka_version: 2.8.1
   zookeeperReference:
     namespace: default
     name: simple
@@ -17,5 +17,5 @@ spec:
             kubernetes.io/os: linux
         replicas: 1
         config:
-          logDirs: "/data/kafka/kafka-logs"
+          logDirs: "/stackable/kafka/kafka-logs"
           metricsPort: 9606
