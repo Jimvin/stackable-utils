@@ -13,7 +13,7 @@ HELM_REPO_URL="https://repo.stackable.tech/repository/helm-${REPO_TYPE}/"
 HELM_REPO_NAME="stackable"
 
 # List of operators to install
-OPERATORS=(zookeeper kafka nifi)
+OPERATORS=(zookeeper kafka nifi spark hive trino opa regorule)
 
 if [ $UID != 0 ]
 then
@@ -48,14 +48,12 @@ function install_prereqs {
       exit 1
     fi
   elif [ "$ID" = "ubuntu" ]; then
-    if [ "$VERSION_ID" = "20.04" ]; then
-      print_g "$ID $VERSION_ID found"
-      INSTALLER=apt
-      install_prereqs_ubuntu
-    else
-      print_r "Only Ubuntu 20.04 LTS is supported. This host is running $ID $VERSION_ID."
-      exit 1
+    print_g "$ID $VERSION_ID found"
+    if [ "$VERSION_ID" != "20.04" ]; then
+        print_y "Only Ubuntu 20.04 LTS is officially supported by Stackable Quickstart. Your mileage may vary."
     fi
+    INSTALLER=apt
+    install_prereqs_ubuntu
   elif [ "$ID" = "debian" ]; then
     if [ "$VERSION_ID" = "10" ]; then
       print_g "$ID $VERSION_ID found"
@@ -83,11 +81,20 @@ function install_prereqs_debian {
 
 function install_prereqs_ubuntu {
   print_g "Installing prerequisite OS packages"
-  apt-get -q -y install gnupg openjdk-11-jdk curl python
+#  apt-get -q -y install gnupg openjdk-11-jdk curl python
+  apt-get -q -y install curl
 }
 
 function install_k8s {
   print_g "Installing K8s"
+
+  # Check for previous installation of k8s
+  if [ -f "/usr/local/bin/kubectl" ]
+  then
+    print_y "kubectl already present, skipping k8s install"
+    return
+  fi
+
   /usr/bin/curl -sfL https://get.k3s.io | /bin/sh -
   /usr/local/bin/kubectl cluster-info
 
@@ -98,6 +105,14 @@ function install_k8s {
 
 function install_k9s {
   print_g "Installing K9s"
+
+  # Check for previous installation of k9s
+  if [ -f "/usr/local/bin/k9s" ]
+  then
+    print_y "k9s already present, skipping k9s install"
+    return
+  fi
+
   URL=https://github.com/derailed/k9s/releases/download/v0.24.15/k9s_Linux_x86_64.tar.gz
   TMPFILE=/tmp/k9s.tar.gz
   /usr/bin/curl -s -L $URL > $TMPFILE
@@ -108,7 +123,6 @@ function install_k9s {
 function install_helm {
   print_g "Installing Helm"
   /usr/bin/curl -sfL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | /bin/bash -
-  print_y "/usr/local/bin/helm repo add ${HELM_REPO_NAME} ${HELM_REPO_URL}"
   /usr/local/bin/helm repo add ${HELM_REPO_NAME} ${HELM_REPO_URL}
 }
 
@@ -132,7 +146,6 @@ function install_operator {
   OPERATOR=$1
   PKG_NAME=${OPERATOR}-operator
   print_g "Installing Stackable operator for ${OPERATOR}"
-  print_y "/usr/local/bin/helm install \"${PKG_NAME}\" \"${HELM_REPO_NAME}/$PKG_NAME\" --devel"
   /usr/local/bin/helm install "${PKG_NAME}" "${HELM_REPO_NAME}/$PKG_NAME" --devel
 }
 
